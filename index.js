@@ -20,8 +20,47 @@ mongoose
     return self.connection.dropDatabase();
   })
   .then(() => {
-    // Run your code here, after you have insured that the connection was made
+    mongoose.connection.dropDatabase();
   })
   .catch(error => {
     console.error('Error connecting to the database', error);
   });
+
+// Recipe.create(data[0])
+// .then((result) => {
+// console.log(result.title);
+// })
+// .catch(() => {
+//   console.log('error');
+// })
+
+let createPromise = Recipe.insertMany(data)
+createPromise.then((result) => {
+    for (receipe of result) {
+      console.log(receipe.title);
+    }
+  })
+  .catch(() => {
+    console.log('error');
+  })
+
+Promise.all([createPromise])
+  .then(() => {
+    mongoose.set('useFindAndModify', false)
+    Recipe.findOneAndUpdate({
+        title: "Rigatoni alla Genovese"
+      }, {
+        duration: 100
+      }, {
+        new: true
+      })
+      .then((result) => {
+        console.log(result);
+      })
+      .catch(() => {})
+    Recipe.deleteOne("Carrot Cake")
+    console.log("deleted");
+  })
+  .catch(() => {
+    console.log('error');
+  })
